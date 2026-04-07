@@ -39,7 +39,6 @@ class S365IDMappingExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $definition = $container->getDefinition(IdMappingClient::class);
-        $definition->setArgument('$baseUrl', $config['base_url']);
         $definition->setArgument('$username', $config['username']);
         $definition->setArgument('$password', $config['password']);
         $definition->setArgument('$project', $config['project']);

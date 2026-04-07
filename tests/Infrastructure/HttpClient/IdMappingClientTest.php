@@ -14,15 +14,6 @@ class IdMappingClientTest extends TestCase
 {
     public function test_forward_includes_correlation_id_header(): void
     {
-        // Auth http client stub (returns token)
-        $authHttpClient = $this->createMock(HttpClientInterface::class);
-
-        $authResponse = $this->createMock(ResponseInterface::class);
-        $authResponse->method('getStatusCode')->willReturn(200);
-        $authResponse->method('toArray')->willReturn(['access_token' => 'token123', 'expires_in' => 3600]);
-
-        $authHttpClient->method('request')->with('POST', $this->stringContains('/oauth/token'))->willReturn($authResponse);
-
         // Content http client mock: we assert this one gets the X-Correlation-ID header
         $contentHttpClient = $this->createMock(HttpClientInterface::class);
 
@@ -44,7 +35,7 @@ class IdMappingClientTest extends TestCase
 
         $logger = $this->createMock(LoggerInterface::class);
 
-        $client = new IdMappingClient($contentHttpClient, $logger, 'https://api.test', 'user', 'pass', 'proj');
+        $client = new IdMappingClient($contentHttpClient, $logger, 'user', 'pass', 'proj');
 
         $s365Response = $client->forward('GET', 'endpoint', [], 'cid-1');
 

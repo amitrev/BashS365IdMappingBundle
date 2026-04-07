@@ -16,7 +16,6 @@ final readonly class IdMappingClient implements IdMappingClientInterface
     public function __construct(
         private HttpClientInterface $httpClient,
         #[Target('s365_id_mapping')] private LoggerInterface $logger,
-        private string $baseUrl,
         private string $username,
         private string $password,
         private string $project,
@@ -29,7 +28,6 @@ final readonly class IdMappingClient implements IdMappingClientInterface
     public function forward(string $method, string $url, array $options = [], ?string $correlationId = null): S365Response
     {
         $defaultOptions = [
-            'base_uri' => $this->baseUrl,
             'auth_basic' => [$this->username, $this->password],
             'headers' => [
                 'Project' => $this->project,

@@ -1,0 +1,6 @@
+s365_id_mapping_proxy:
+    path: /{endpoint}
+    controller: Bash\S365IDMappingBundle\Infrastructure\Symfony\Controller\IdMappingProxyController
+    methods: [GET, POST, PUT]
+    requirements:
+        endpoint: ".+"

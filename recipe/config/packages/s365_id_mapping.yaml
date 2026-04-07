@@ -1,0 +1,5 @@
+s365_id_mapping:
+  base_url: '%env(S365_ID_MAPPING_API_URL)%'
+  username: '%env(S365_ID_MAPPING_API_USERNAME)%'
+  password: '%env(S365_ID_MAPPING_API_PASSWORD)%'
+  project: '%env(S365_ID_MAPPING_API_PROJECT)%'

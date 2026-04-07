@@ -1,0 +1,17 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Bash\S365IDMappingBundle\Domain\HttpClient\IdMappingClientInterface:
+        alias: Bash\S365IDMappingBundle\Infrastructure\HttpClient\IdMappingClient
+
+    Bash\S365IDMappingBundle\Infrastructure\HttpClient\IdMappingClient:
+        tags:
+            - { name: monolog.logger, channel: s365_id_mapping }
+
+    Bash\S365IDMappingBundle\Infrastructure\Symfony\Controller\:
+        resource: '../../Infrastructure/Symfony/Controller/'
+        public: true
+        tags: ['controller.service_arguments']

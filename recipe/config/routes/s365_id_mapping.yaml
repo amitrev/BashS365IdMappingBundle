@@ -1,0 +1,3 @@
+s365_id_mapping:
+  resource: '@S365IDMappingBundle/src/Resources/config/routes.yaml'
+  prefix: '/s365id/proxy'

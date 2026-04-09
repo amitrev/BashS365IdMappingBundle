@@ -9,7 +9,7 @@ services:
         factory: ['Symfony\Component\HttpClient\ScopingHttpClient', 'forBaseUri']
         arguments:
             $client: '@http_client'
-            $baseUri: '%env(string:S365_CONTENT_API_URL)%'
+            $baseUri: '%env(string:S365_ID_MAPPING_API_URL)%'
             $defaultOptions:
                 timeout: 10
                 retry_failed:

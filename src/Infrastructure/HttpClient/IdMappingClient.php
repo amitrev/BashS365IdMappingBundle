@@ -27,19 +27,18 @@ final readonly class IdMappingClient implements IdMappingClientInterface
      */
     public function forward(string $method, string $url, array $options = [], ?string $correlationId = null): S365Response
     {
-        $defaultOptions = [
-            'auth_basic' => [$this->username, $this->password],
-            'headers' => [
-                'Project' => $this->project,
-                'Accept' => 'application/json',
-            ],
+        $headers = [
+            'Project' => $this->project,
+            'Accept' => 'application/json',
         ];
 
         if ($correlationId) {
-            $defaultOptions['headers']['X-Correlation-ID'] = $correlationId;
+            $headers['X-Correlation-ID'] = $correlationId;
         }
 
-        $finalOptions = array_merge_recursive($defaultOptions, $options);
+        $finalOptions = $options;
+        $finalOptions['headers'] = [...$headers, ...($options['headers'] ?? [])];
+        $finalOptions['auth_basic'] ??= [$this->username, $this->password];
 
         try {
             $response = $this->httpClient->request($method, $url, $finalOptions);

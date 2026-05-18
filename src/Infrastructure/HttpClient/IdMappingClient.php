@@ -11,15 +11,25 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final readonly class IdMappingClient implements IdMappingClientInterface
+final class IdMappingClient implements IdMappingClientInterface
 {
+    /** @var array<string, string> */
+    private readonly array $defaultHeaders;
+    /** @var string[] */
+    private readonly array $defaultAuth;
+
     public function __construct(
-        private HttpClientInterface $httpClient,
-        #[Target('s365_id_mapping')] private LoggerInterface $logger,
-        private string $username,
-        private string $password,
-        private string $project,
+        private readonly HttpClientInterface $httpClient,
+        #[Target('s365_id_mapping')] private readonly LoggerInterface $logger,
+        private readonly string $username,
+        private readonly string $password,
+        private readonly string $project,
     ) {
+        $this->defaultHeaders = [
+            'Project' => $this->project,
+            'Accept' => 'application/json',
+        ];
+        $this->defaultAuth = [$this->username, $this->password];
     }
 
     /**
@@ -27,10 +37,7 @@ final readonly class IdMappingClient implements IdMappingClientInterface
      */
     public function forward(string $method, string $url, array $options = [], ?string $correlationId = null): S365Response
     {
-        $headers = [
-            'Project' => $this->project,
-            'Accept' => 'application/json',
-        ];
+        $headers = $this->defaultHeaders;
 
         if ($correlationId) {
             $headers['X-Correlation-ID'] = $correlationId;
@@ -38,7 +45,7 @@ final readonly class IdMappingClient implements IdMappingClientInterface
 
         $finalOptions = $options;
         $finalOptions['headers'] = [...$headers, ...($options['headers'] ?? [])];
-        $finalOptions['auth_basic'] ??= [$this->username, $this->password];
+        $finalOptions['auth_basic'] ??= $this->defaultAuth;
 
         try {
             $response = $this->httpClient->request($method, $url, $finalOptions);

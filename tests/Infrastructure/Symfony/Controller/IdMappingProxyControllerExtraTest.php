@@ -30,7 +30,15 @@ class IdMappingProxyControllerExtraTest extends TestCase
                 'POST',
                 'endpoint',
                 $this->callback(function ($options) {
-                    return isset($options['body'], $options['headers']['Content-Type']) && '{"foo":"bar"}' === $options['body'];
+                    if (!isset($options['body'], $options['headers']['Content-Type'])) {
+                        return false;
+                    }
+
+                    if (is_resource($options['body'])) {
+                        return '{"foo":"bar"}' === stream_get_contents($options['body'], -1, 0);
+                    }
+
+                    return '{"foo":"bar"}' === $options['body'];
                 }),
             )
             ->willReturn(new S365Response('{"ok":true}', 201, ['x-custom' => ['v']]));

@@ -36,7 +36,7 @@ final readonly class IdMappingProxyController
             $request->getMethod(),
             $endpoint,
             [
-                'body' => $request->getContent(),
+                'body' => $request->getContent(true),
                 'headers' => [
                     'Content-Type' => $request->headers->get('Content-Type', 'application/json'),
                     'X-Correlation-ID' => $request->headers->get('X-Correlation-ID'),

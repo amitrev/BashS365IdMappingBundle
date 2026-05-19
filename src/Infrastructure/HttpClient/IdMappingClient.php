@@ -56,7 +56,16 @@ final class IdMappingClient implements IdMappingClientInterface
             $response = $this->httpClient->request($method, $url, $finalOptions);
 
             return new S365Response(
-                static fn () => $response->getContent(false),
+                function () use ($response): iterable {
+                    try {
+                        foreach ($this->httpClient->stream($response) as $chunk) {
+                            yield $chunk->getContent();
+                        }
+                    } catch (\Throwable $e) {
+                        $this->logger->error('S365 API Streaming Error', ['error' => $e->getMessage()]);
+                        throw new S365CommunicationException('Streaming error', 0, $e);
+                    }
+                },
                 $response->getStatusCode(),
                 $response->getHeaders(false),
             );

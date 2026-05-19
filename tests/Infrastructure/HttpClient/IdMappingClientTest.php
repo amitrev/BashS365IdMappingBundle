@@ -33,6 +33,46 @@ class IdMappingClientTest extends TestCase
             )
             ->willReturn($contentResponse);
 
+        $chunk = $this->createMock(\Symfony\Contracts\HttpClient\ChunkInterface::class);
+        $chunk->method('getContent')->willReturn($contentResponse->getContent());
+
+        $responseStream = new class([$chunk]) implements \Symfony\Contracts\HttpClient\ResponseStreamInterface {
+            private int $key = 0;
+
+            /** @param \Symfony\Contracts\HttpClient\ChunkInterface[] $chunks */
+            public function __construct(private array $chunks)
+            {
+            }
+
+            public function current(): \Symfony\Contracts\HttpClient\ChunkInterface
+            {
+                return $this->chunks[$this->key];
+            }
+
+            public function next(): void
+            {
+                ++$this->key;
+            }
+
+            public function key(): ResponseInterface
+            {
+                throw new \Exception('Not implemented');
+            }
+
+            public function valid(): bool
+            {
+                return isset($this->chunks[$this->key]);
+            }
+
+            public function rewind(): void
+            {
+                $this->key = 0;
+            }
+        };
+
+        $contentHttpClient->method('stream')
+            ->willReturn($responseStream);
+
         $logger = $this->createMock(LoggerInterface::class);
 
         $client = new IdMappingClient($contentHttpClient, $logger, 'user', 'pass', 'proj');

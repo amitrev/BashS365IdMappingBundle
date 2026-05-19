@@ -13,11 +13,11 @@ final class S365Response
     private bool $isContentLoaded = false;
 
     /**
-     * @param string|\Closure(): string $contentOrLoader
-     * @param array<string, string[]>   $headers
+     * @param string|iterable<string>|\Closure(): (string|iterable<string>) $contentOrLoader
+     * @param array<string, string[]>                                       $headers
      */
     public function __construct(
-        private readonly string|\Closure $contentOrLoader,
+        private readonly string|iterable|\Closure $contentOrLoader,
         private readonly int $statusCode,
         private readonly array $headers = [],
     ) {
@@ -30,13 +30,48 @@ final class S365Response
     public function getContent(): string
     {
         if (!$this->isContentLoaded) {
-            /** @var \Closure(): string $loader */
-            $loader = $this->contentOrLoader;
-            $this->content = $loader();
+            $this->content = '';
+            foreach ($this->toIterable() as $chunk) {
+                $this->content .= $chunk;
+            }
             $this->isContentLoaded = true;
         }
 
         return $this->content;
+    }
+
+    /**
+     * @return iterable<string>
+     */
+    public function toIterable(): iterable
+    {
+        if ($this->isContentLoaded) {
+            yield $this->content;
+
+            return;
+        }
+
+        $content = $this->contentOrLoader;
+        if ($content instanceof \Closure) {
+            $content = $content();
+        }
+
+        if (\is_string($content)) {
+            $this->content = $content;
+            $this->isContentLoaded = true;
+            yield $content;
+
+            return;
+        }
+
+        $fullContent = '';
+        foreach ($content as $chunk) {
+            $fullContent .= $chunk;
+            yield $chunk;
+        }
+
+        $this->content = $fullContent;
+        $this->isContentLoaded = true;
     }
 
     public function getStatusCode(): int

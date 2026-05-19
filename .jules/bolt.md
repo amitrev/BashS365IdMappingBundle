@@ -14,6 +14,10 @@
 **Learning:** Manually unsetting multiple header keys is slower than `array_diff_key`.
 **Action:** Use `array_diff_key` with a static map of keys to remove.
 
+## 2025-05-14 - [End-to-end Streaming]
+**Learning:** Returning a large string from `S365Response::getContent()` and then echoing it in a `StreamedResponse` still buffers the entire body in memory.
+**Action:** Implement `S365Response::toIterable()` to yield chunks directly from `HttpClient::stream()` to the final output, ensuring constant memory usage even for massive payloads.
+
 ## 2025-05-14 - [Header Normalization & Pre-calculation]
 **Learning:** Symfony HttpClient (and HTTP in general) treats headers as case-insensitive. Normalizing them to lowercase early avoids redundant internal normalization. Pre-calculating full option arrays in the constructor reduces overhead during high-frequency requests.
 **Action:** Always lowercase internal header keys and pre-calculate base configuration arrays when possible.

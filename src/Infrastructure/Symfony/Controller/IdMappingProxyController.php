@@ -60,7 +60,10 @@ final readonly class IdMappingProxyController
 
         return new StreamedResponse(
             static function () use ($s365Response): void {
-                echo $s365Response->getContent();
+                foreach ($s365Response->toIterable() as $chunk) {
+                    echo $chunk;
+                    flush();
+                }
             },
             $s365Response->getStatusCode(),
             self::filterHeaders($s365Response->getHeaders()),

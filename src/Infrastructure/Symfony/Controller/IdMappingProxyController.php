@@ -74,12 +74,19 @@ final readonly class IdMappingProxyController
      */
     private static function filterHeaders(array $headers): array
     {
-        unset(
-            $headers['content-encoding'],
-            $headers['transfer-encoding'],
-            $headers['content-length'],
-        );
+        static $hopByHop = [
+            'connection' => true,
+            'keep-alive' => true,
+            'proxy-authenticate' => true,
+            'proxy-authorization' => true,
+            'te' => true,
+            'trailers' => true,
+            'transfer-encoding' => true,
+            'upgrade' => true,
+            'content-length' => true,
+            'content-encoding' => true,
+        ];
 
-        return $headers;
+        return array_diff_key($headers, $hopByHop);
     }
 }

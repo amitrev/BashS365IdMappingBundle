@@ -9,3 +9,7 @@
 ## 2025-05-14 - [Avoiding Redundant Body Reads]
 **Learning:** Calling `$request->getContent()` or `$request->getContent(true)` on GET/HEAD requests is unnecessary and can be wasteful.
 **Action:** Only read the request body for methods that typically contain one (POST, PUT, PATCH, etc.).
+
+## 2025-05-14 - [Efficient Header Filtering]
+**Learning:** Manually unsetting multiple header keys is slower than `array_diff_key`.
+**Action:** Use `array_diff_key` with a static map of keys to remove.

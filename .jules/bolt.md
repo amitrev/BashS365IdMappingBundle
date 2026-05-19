@@ -5,3 +5,7 @@
 ## 2025-05-14 - [Streaming Request Bodies]
 **Learning:** For proxy controllers, using `$request->getContent()` loads the entire request body into memory. For large requests, this can lead to memory exhaustion.
 **Action:** Use `$request->getContent(true)` to obtain a resource (PHP stream) and pass it directly to the HttpClient. This enables streaming and reduces the memory peak.
+
+## 2025-05-14 - [Avoiding Redundant Body Reads]
+**Learning:** Calling `$request->getContent()` or `$request->getContent(true)` on GET/HEAD requests is unnecessary and can be wasteful.
+**Action:** Only read the request body for methods that typically contain one (POST, PUT, PATCH, etc.).

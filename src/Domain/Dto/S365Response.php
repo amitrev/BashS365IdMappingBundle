@@ -30,11 +30,9 @@ final class S365Response
     public function getContent(): string
     {
         if (!$this->isContentLoaded) {
-            $this->content = '';
-            foreach ($this->toIterable() as $chunk) {
-                $this->content .= $chunk;
+            foreach ($this->toIterable() as $_) {
+                // toIterable() populates $this->content
             }
-            $this->isContentLoaded = true;
         }
 
         return $this->content;

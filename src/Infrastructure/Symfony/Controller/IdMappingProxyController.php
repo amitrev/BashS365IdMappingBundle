@@ -8,6 +8,7 @@ use Bash\S365IDMappingBundle\Domain\Exception\S365IDMappingException;
 use Bash\S365IDMappingBundle\Domain\HttpClient\IdMappingClientInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -57,8 +58,10 @@ final readonly class IdMappingProxyController
             $correlationId,
         );
 
-        return new Response(
-            $s365Response->getContent(),
+        return new StreamedResponse(
+            static function () use ($s365Response): void {
+                echo $s365Response->getContent();
+            },
             $s365Response->getStatusCode(),
             self::filterHeaders($s365Response->getHeaders()),
         );

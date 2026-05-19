@@ -51,7 +51,14 @@ class IdMappingProxyControllerExtraTest extends TestCase
         $response = $controller($request, 'endpoint');
 
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals('{"ok":true}', $response->getContent());
+        if ($response instanceof \Symfony\Component\HttpFoundation\StreamedResponse) {
+            ob_start();
+            $response->sendContent();
+            $content = ob_get_clean();
+            $this->assertEquals('{"ok":true}', $content);
+        } else {
+            $this->assertEquals('{"ok":true}', $response->getContent());
+        }
     }
 
     /**

@@ -52,7 +52,7 @@ final class IdMappingClient implements IdMappingClientInterface
             $response = $this->httpClient->request($method, $url, $finalOptions);
 
             return new S365Response(
-                $response->getContent(false),
+                static fn () => $response->getContent(false),
                 $response->getStatusCode(),
                 $response->getHeaders(false),
             );

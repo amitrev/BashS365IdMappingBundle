@@ -13,3 +13,7 @@
 ## 2025-05-14 - [Efficient Header Filtering]
 **Learning:** Manually unsetting multiple header keys is slower than `array_diff_key`.
 **Action:** Use `array_diff_key` with a static map of keys to remove.
+
+## 2025-05-14 - [Header Normalization & Pre-calculation]
+**Learning:** Symfony HttpClient (and HTTP in general) treats headers as case-insensitive. Normalizing them to lowercase early avoids redundant internal normalization. Pre-calculating full option arrays in the constructor reduces overhead during high-frequency requests.
+**Action:** Always lowercase internal header keys and pre-calculate base configuration arrays when possible.

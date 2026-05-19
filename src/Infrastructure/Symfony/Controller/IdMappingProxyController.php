@@ -39,11 +39,11 @@ final readonly class IdMappingProxyController
 
         $options = [
             'headers' => [
-                'Content-Type' => $request->headers->get('Content-Type', 'application/json'),
+                'content-type' => $request->headers->get('Content-Type', 'application/json'),
             ],
         ];
 
-        if (!\in_array($method, ['GET', 'HEAD'], true)) {
+        if ('GET' !== $method && 'HEAD' !== $method) {
             $options['body'] = $request->getContent(true);
         }
 

@@ -28,7 +28,7 @@ class IdMappingClientTest extends TestCase
                 'GET',
                 'endpoint',
                 $this->callback(function ($options) {
-                    return isset($options['headers']['X-Correlation-ID']) && 'cid-1' === $options['headers']['X-Correlation-ID'];
+                    return isset($options['headers']['x-correlation-id']) && 'cid-1' === $options['headers']['x-correlation-id'];
                 }),
             )
             ->willReturn($contentResponse);

@@ -13,10 +13,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class IdMappingClient implements IdMappingClientInterface
 {
-    /** @var array<string, string> */
-    private readonly array $defaultHeaders;
-    /** @var string[] */
-    private readonly array $defaultAuth;
+    /** @var array<string, mixed> */
+    private readonly array $baseOptions;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -25,11 +23,13 @@ final class IdMappingClient implements IdMappingClientInterface
         private readonly string $password,
         private readonly string $project,
     ) {
-        $this->defaultHeaders = [
-            'Project' => $this->project,
-            'Accept' => 'application/json',
+        $this->baseOptions = [
+            'headers' => [
+                'project' => $this->project,
+                'accept' => 'application/json',
+            ],
+            'auth_basic' => [$this->username, $this->password],
         ];
-        $this->defaultAuth = [$this->username, $this->password];
     }
 
     /**
@@ -38,20 +38,17 @@ final class IdMappingClient implements IdMappingClientInterface
     public function forward(string $method, string $url, array $options = [], ?string $correlationId = null): S365Response
     {
         if ([] === $options && null === $correlationId) {
-            $finalOptions = [
-                'headers' => $this->defaultHeaders,
-                'auth_basic' => $this->defaultAuth,
-            ];
+            $finalOptions = $this->baseOptions;
         } else {
-            $headers = $this->defaultHeaders;
+            $headers = $this->baseOptions['headers'];
             if (null !== $correlationId) {
-                $headers['X-Correlation-ID'] = $correlationId;
+                $headers['x-correlation-id'] = $correlationId;
             }
 
             $finalOptions = [
                 ...$options,
                 'headers' => [...$headers, ...($options['headers'] ?? [])],
-                'auth_basic' => $options['auth_basic'] ?? $this->defaultAuth,
+                'auth_basic' => $options['auth_basic'] ?? $this->baseOptions['auth_basic'],
             ];
         }
 

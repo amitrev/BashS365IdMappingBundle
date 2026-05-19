@@ -30,7 +30,7 @@ class IdMappingProxyControllerExtraTest extends TestCase
                 'POST',
                 'endpoint',
                 $this->callback(function ($options) {
-                    if (!isset($options['body'], $options['headers']['Content-Type'])) {
+                    if (!isset($options['body'], $options['headers']['content-type'])) {
                         return false;
                     }
 

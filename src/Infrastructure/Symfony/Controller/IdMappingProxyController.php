@@ -32,23 +32,31 @@ final readonly class IdMappingProxyController
             throw new S365IDMappingException('Invalid or restricted endpoint');
         }
 
+        $query = $request->query->all();
+        $correlationId = $request->headers->get('X-Correlation-ID');
+
+        $options = [
+            'body' => $request->getContent(true),
+            'headers' => array_filter([
+                'Content-Type' => $request->headers->get('Content-Type', 'application/json'),
+            ]),
+        ];
+
+        if ([] !== $query) {
+            $options['query'] = $query;
+        }
+
         $s365Response = $this->idMappingClient->forward(
             $request->getMethod(),
             $endpoint,
-            [
-                'body' => $request->getContent(true),
-                'headers' => [
-                    'Content-Type' => $request->headers->get('Content-Type', 'application/json'),
-                    'X-Correlation-ID' => $request->headers->get('X-Correlation-ID'),
-                ],
-                'query' => $request->query->all(),
-            ],
+            $options,
+            $correlationId,
         );
 
         return new Response(
             $s365Response->getContent(),
             $s365Response->getStatusCode(),
-            $this->filterHeaders($s365Response->getHeaders()),
+            self::filterHeaders($s365Response->getHeaders()),
         );
     }
 
@@ -57,7 +65,7 @@ final readonly class IdMappingProxyController
      *
      * @return array<string, string[]>
      */
-    private function filterHeaders(array $headers): array
+    private static function filterHeaders(array $headers): array
     {
         unset(
             $headers['content-encoding'],

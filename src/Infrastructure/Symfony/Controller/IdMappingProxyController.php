@@ -50,7 +50,7 @@ final readonly class IdMappingProxyController
         }
 
         $s365Response = $this->idMappingClient->forward(
-            $request->getMethod(),
+            $method,
             $endpoint,
             $options,
             $correlationId,

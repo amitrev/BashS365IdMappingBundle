@@ -19,16 +19,16 @@ final class IdMappingClient implements IdMappingClientInterface
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         #[Target('s365_id_mapping')] private readonly LoggerInterface $logger,
-        private readonly string $username,
-        private readonly string $password,
-        private readonly string $project,
+        string $username,
+        string $password,
+        string $project,
     ) {
         $this->baseOptions = [
             'headers' => [
-                'project' => $this->project,
+                'project' => $project,
                 'accept' => 'application/json',
             ],
-            'auth_basic' => [$this->username, $this->password],
+            'auth_basic' => [$username, $password],
         ];
     }
 

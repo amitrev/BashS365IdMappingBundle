@@ -62,13 +62,13 @@ final class S365Response
             return;
         }
 
-        $fullContent = '';
+        $chunks = [];
         foreach ($content as $chunk) {
-            $fullContent .= $chunk;
+            $chunks[] = $chunk;
             yield $chunk;
         }
 
-        $this->content = $fullContent;
+        $this->content = implode('', $chunks);
         $this->isContentLoaded = true;
     }
 

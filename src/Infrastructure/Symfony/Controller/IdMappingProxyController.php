@@ -33,7 +33,7 @@ final readonly class IdMappingProxyController
             throw new S365IDMappingException('Invalid or restricted endpoint');
         }
 
-        $query = $request->query->count() > 0 ? $request->query->all() : [];
+        $query = $request->query->all();
         $correlationId = $request->headers->get('X-Correlation-ID');
         $method = $request->getMethod();
 

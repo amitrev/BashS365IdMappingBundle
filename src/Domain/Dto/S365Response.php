@@ -11,6 +11,10 @@ final class S365Response
     private bool $isDecoded = false;
     private string $content;
     private bool $isContentLoaded = false;
+    /** @var string[] */
+    private array $chunks = [];
+    private bool $isStreamConsumed = false;
+    private ?\Iterator $iterator = null;
 
     /**
      * @param string|iterable<string>|\Closure(): (string|iterable<string>) $contentOrLoader
@@ -31,7 +35,6 @@ final class S365Response
     {
         if (!$this->isContentLoaded) {
             foreach ($this->toIterable() as $_) {
-                // toIterable() populates $this->content
             }
         }
 
@@ -49,27 +52,41 @@ final class S365Response
             return;
         }
 
-        $content = $this->contentOrLoader;
-        if ($content instanceof \Closure) {
-            $content = $content();
-        }
+        yield from $this->chunks;
 
-        if (\is_string($content)) {
-            $this->content = $content;
-            $this->isContentLoaded = true;
-            yield $content;
-
+        if ($this->isStreamConsumed) {
             return;
         }
 
-        $chunks = [];
-        foreach ($content as $chunk) {
-            $chunks[] = $chunk;
-            yield $chunk;
+        if (null === $this->iterator) {
+            $content = $this->contentOrLoader;
+            if ($content instanceof \Closure) {
+                $content = $content();
+            }
+
+            if (\is_string($content)) {
+                $this->content = $content;
+                $this->isContentLoaded = true;
+                yield $content;
+
+                return;
+            }
+
+            $this->iterator = $content instanceof \Iterator ? $content : (fn () => yield from $content)();
         }
 
-        $this->content = implode('', $chunks);
+        while ($this->iterator->valid()) {
+            $chunk = $this->iterator->current();
+            $this->chunks[] = $chunk;
+            yield $chunk;
+            $this->iterator->next();
+        }
+
+        $this->content = implode('', $this->chunks);
+        $this->chunks = [];
         $this->isContentLoaded = true;
+        $this->isStreamConsumed = true;
+        $this->iterator = null;
     }
 
     public function getStatusCode(): int

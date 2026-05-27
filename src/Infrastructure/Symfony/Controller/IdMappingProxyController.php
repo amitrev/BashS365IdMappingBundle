@@ -37,11 +37,12 @@ final readonly class IdMappingProxyController
         $correlationId = $request->headers->get('X-Correlation-ID');
         $method = $request->getMethod();
 
-        $options = [
-            'headers' => [
-                'content-type' => $request->headers->get('Content-Type', 'application/json'),
-            ],
-        ];
+        $options = [];
+
+        $contentType = $request->headers->get('Content-Type', 'application/json');
+        if (null !== $contentType) {
+            $options['headers']['content-type'] = $contentType;
+        }
 
         if ('GET' !== $method && 'HEAD' !== $method) {
             $options['body'] = $request->getContent(true);
